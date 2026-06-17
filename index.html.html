@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Rutina Gym 💪</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --neon:#00F5A0;--neon2:#00D9F5;--pink:#FF2D78;--orange:#FF8C00;--purple:#7C3AED;
+  --yellow:#FFE100;--bg:#0D0D1A;--card:#16192E;--card2:#1E2240;--tx:#F0F0FF;--ts:#8B8FB0;--bd:#2A2D50;
+}
+body{font-family:'Nunito',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;background-image:radial-gradient(ellipse at 20% 0%,#1a0a3a 0%,transparent 60%),radial-gradient(ellipse at 80% 100%,#0a2a1a 0%,transparent 60%)}
+
+/* HEADER */
+.hdr{background:rgba(13,13,26,.92);border-bottom:1px solid var(--bd);padding:14px 14px 0;position:sticky;top:0;z-index:100;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.htop{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.htop h1{font-size:18px;font-weight:900;flex:1;background:linear-gradient(90deg,var(--neon),var(--neon2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-.3px;text-shadow:none}
+
+/* XP BAR (progreso semanal) */
+.prog-wrap{margin-bottom:12px;background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:8px 12px}
+.prog-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.prog-label{font-size:11px;font-weight:800;color:var(--yellow);letter-spacing:.4px;text-transform:uppercase}
+.prog-pct{font-size:12px;font-weight:900;color:var(--neon)}
+.prog-bar{height:8px;background:var(--bd);border-radius:50px;overflow:hidden}
+.prog-fill{height:100%;border-radius:50px;background:linear-gradient(90deg,var(--purple),var(--pink),var(--orange));transition:width .4s ease;box-shadow:0 0 8px rgba(255,45,120,.5)}
+
+/* PERSON TABS */
+.ptabs{display:flex;gap:8px;margin-bottom:10px}
+.ptab{flex:1;padding:9px 6px;border-radius:12px;border:2px solid var(--bd);font-size:12px;font-weight:800;cursor:pointer;background:var(--card);color:var(--ts);text-align:center;-webkit-appearance:none;transition:all .2s;letter-spacing:.2px}
+.ptab.active{background:linear-gradient(135deg,#7C3AED,#FF2D78);color:#fff;border-color:transparent;box-shadow:0 4px 15px rgba(124,58,237,.4)}
+
+/* DAY TABS */
+.dtabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:12px;scrollbar-width:none}
+.dtabs::-webkit-scrollbar{display:none}
+.dtab{flex-shrink:0;padding:6px 13px;border-radius:10px;border:2px solid var(--bd);font-size:11px;font-weight:800;cursor:pointer;background:var(--card);color:var(--ts);white-space:nowrap;-webkit-appearance:none;transition:all .2s}
+.dtab.active{background:linear-gradient(135deg,#0052D4,#00D9F5);color:#fff;border-color:transparent;box-shadow:0 4px 12px rgba(0,217,245,.3)}
+.dtab .dtick{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--neon);margin-left:5px;vertical-align:middle;box-shadow:0 0 6px var(--neon)}
+
+/* CONTENT */
+.content{padding:14px}
+
+/* DAY HEADER */
+.dhdr{margin-bottom:12px;padding:14px;background:linear-gradient(135deg,var(--card),var(--card2));border:1px solid var(--bd);border-radius:14px;border-left:3px solid var(--neon2)}
+.dtitle{font-size:17px;font-weight:900;color:var(--tx);letter-spacing:-.3px}
+.dfocus{font-size:11px;color:var(--neon);margin-top:4px;font-weight:700;letter-spacing:.3px}
+
+/* DAY PROGRESS RING */
+.day-prog{background:linear-gradient(135deg,var(--card),var(--card2));border:1px solid var(--bd);border-radius:14px;padding:12px 14px;margin-bottom:12px;display:flex;align-items:center;gap:14px}
+.day-prog-ring{position:relative;width:50px;height:50px;flex-shrink:0}
+.day-prog-ring svg{width:50px;height:50px;transform:rotate(-90deg)}
+.day-prog-ring .ring-bg{fill:none;stroke:var(--bd);stroke-width:4}
+.day-prog-ring .ring-fill{fill:none;stroke:url(#rg);stroke-width:4;stroke-linecap:round;transition:stroke-dashoffset .4s ease;filter:drop-shadow(0 0 4px rgba(0,245,160,.6))}
+.day-prog-pct{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:11px;font-weight:900;color:var(--neon)}
+.day-prog-info{flex:1}
+.day-prog-title{font-size:13px;font-weight:800;color:var(--tx)}
+.day-prog-sub{font-size:11px;color:var(--ts);margin-top:3px;font-weight:700}
+
+/* BANNER */
+.banner{border-radius:12px;padding:10px 13px;margin-bottom:12px;border-left:3px solid}
+.bw{background:rgba(255,140,0,.12);border-color:var(--orange)}
+.bc{background:rgba(0,245,160,.08);border-color:var(--neon);margin-top:12px;margin-bottom:0}
+.blabel{font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.8px;margin-bottom:3px}
+.bw .blabel{color:var(--orange)}
+.bc .blabel{color:var(--neon)}
+.btext{font-size:12px;color:var(--ts);line-height:1.5;font-weight:700}
+
+/* EX LIST */
+.exlist{display:flex;flex-direction:column;gap:10px}
+
+/* EX CARD */
+.exc{background:var(--card);border:2px solid var(--bd);border-radius:16px;overflow:hidden;transition:all .25s}
+.exc.done{border-color:var(--neon);background:rgba(0,245,160,.06);box-shadow:0 0 16px rgba(0,245,160,.15)}
+
+/* EX TOP ROW */
+.extop{display:flex;gap:10px;align-items:flex-start;padding:12px 12px 10px}
+.exillo{flex-shrink:0;width:76px;height:76px;border-radius:12px;background:var(--card2);display:flex;align-items:center;justify-content:center;overflow:hidden;border:2px solid var(--bd);transition:all .2s}
+.exc.done .exillo{border-color:var(--neon);background:rgba(0,245,160,.1)}
+.exillo svg{width:66px;height:66px}
+.exbody{flex:1;min-width:0}
+.exname{font-size:13px;font-weight:900;color:var(--tx);margin-bottom:6px;line-height:1.3;letter-spacing:-.2px}
+.exc.done .exname{color:var(--neon)}
+.badges{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:0}
+.badge{font-size:10px;padding:3px 8px;border-radius:6px;font-weight:800;letter-spacing:.2px}
+.bs{background:rgba(0,245,160,.15);color:var(--neon);border:1px solid rgba(0,245,160,.3)}
+.br{background:rgba(124,58,237,.2);color:#C4B5FD;border:1px solid rgba(124,58,237,.3)}
+.bt{background:rgba(139,143,176,.15);color:var(--ts);border:1px solid rgba(139,143,176,.2)}
+
+/* CHECK BTN */
+.chkbtn{width:100%;background:none;border:none;border-top:1px solid var(--bd);padding:10px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;-webkit-appearance:none;font-size:12px;font-weight:800;transition:background .15s}
+.chkbtn:active{background:rgba(255,255,255,.04)}
+.chk-circle{width:22px;height:22px;border-radius:50%;border:2px solid var(--bd);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s}
+.exc.done .chk-circle{background:var(--neon);border-color:var(--neon);box-shadow:0 0 10px rgba(0,245,160,.6)}
+.chk-circle svg{opacity:0;transition:opacity .2s}
+.exc.done .chk-circle svg{opacity:1}
+.chk-txt{color:var(--ts)}
+.exc.done .chk-txt{color:var(--neon)}
+
+/* EXPAND */
+.expbtn{width:100%;background:none;border:none;border-top:1px solid var(--bd);padding:9px 14px;text-align:left;font-size:11px;font-weight:800;color:var(--neon2);cursor:pointer;display:flex;align-items:center;gap:6px;-webkit-appearance:none;letter-spacing:.2px}
+.expbtn .arr{transition:transform .25s;margin-left:auto;font-size:13px}
+.expbtn.open .arr{transform:rotate(180deg)}
+.exdet{display:none;padding:0 14px 12px}
+.exdet.open{display:block}
+.dsec{margin-top:10px}
+.dlabel{font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.6px;color:var(--neon2);margin-bottom:5px}
+.dtext{font-size:12px;color:var(--ts);line-height:1.55;font-weight:700}
+.dsteps{list-style:none;padding:0}
+.dsteps li{font-size:12px;color:var(--ts);line-height:1.55;padding:5px 0 5px 20px;position:relative;border-bottom:1px solid var(--bd);font-weight:700}
+.dsteps li:last-child{border-bottom:none}
+.dsteps li::before{content:attr(data-n);position:absolute;left:0;font-weight:900;color:var(--purple);font-size:11px}
+.tipbox{background:rgba(255,140,0,.1);border:1px solid rgba(255,140,0,.3);border-radius:10px;padding:9px 12px;margin-top:10px;font-size:12px;color:#FFB347;line-height:1.5;font-weight:700}
+
+.footer{text-align:center;padding:18px 16px;font-size:11px;color:var(--ts);line-height:1.7;font-weight:700}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <div class="htop">
+    <span style="font-size:22px">💪</span>
+    <h1>Rutina semanal de gym</h1>
+  </div>
+  <div class="prog-wrap">
+    <div class="prog-row">
+      <span class="prog-label" id="wpLabel">Progreso semanal</span>
+      <span class="prog-pct" id="wpPct">0%</span>
+    </div>
+    <div class="prog-bar"><div class="prog-fill" id="wpFill" style="width:0%"></div></div>
+  </div>
+  <div class="ptabs">
+    <button class="ptab active" onclick="setPerson('yo')">🧑 Yo — Fútbol & Masa</button>
+    <button class="ptab" onclick="setPerson('pareja')">👩 Pareja — Tonificar</button>
+  </div>
+  <div class="dtabs" id="dayTabs"></div>
+</div>
+
+<div class="content" id="content"></div>
+<div class="footer">Descansa sáb & dom · 7-8h de sueño · Hidratación constante<br>Sem 1-2: aprende movimientos · Sem 3+: aumenta peso gradualmente</div>
+
+<script>
+const SVG={
+sentadilla:`<svg viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg"><circle cx="45" cy="14" r="9" fill="#00F5A0"/><line x1="45" y1="23" x2="45" y2="52" stroke="#C4B5FD" stroke-width="3.5" stroke-linecap="round"/><line x1="45" y1="36" x2="28" y2="30" stroke="#C4B5FD" stroke-width="3" stroke-linecap="round"/><line x1="45" y1="36" x2="62" y2="30" stroke="#C4B5FD" stroke-width="3" stroke-linecap="round"/><line x1="45" y1="52" x2="32" y2="70" stroke="#C4B5FD" stroke-width="3.5" stroke-linecap="round"/><line x1="45" y1="52" x2="58" y2="70" stroke="#C4B5FD" stroke-width="3.5" stroke-linecap="round"/><line x1="32" y1="70" x2="26" y2="83" stroke="#C4B5FD" stroke-width="3" stroke-linecap="round"/><line x1="58" y1="70" x2="64" y2="83" stroke="#C4B5FD" stroke-width="3" stroke-linecap="round"/><rect x="18" y="32" width="54" height="6" rx="3" fill="#FF8C00" opacity=".9"/></svg>`,
+prensa_pecho:`<svg viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg"><rect x="10" y="40" width="70" height="18" rx="4" fill="#2A2D50"/><circle cx="45" cy="26" r="9" fill="#00F5A0"/><line x1="45" y1="35" x2="45" y2="56" stroke="#C4B5FD" stroke-width="3.5" stroke-linecap="round"/><line x1="45" y1="42" x2="22" y2="30" stroke="#C4B5FD" stroke-width="3" stroke-linecap="round"/><line x1="45" y1="42" x2="68" y2="30" stroke="#C4B5FD" stroke-width="3" stroke-linecap="round"/><circle cx="18" cy="28" r="5" fill="#FF8C00" opacity=".9"/><circle cx="72" cy="28" r="5" fill="#FF8C00" opacity=".9"/><line x1="22" y1="30" x2="13" y2="28" stroke="#8B8FB0" stroke-width="2.5"/><line x1="68" y1="30" x2="77" y2="28" stroke="#8B8FB0" stroke-width="2.5"/></svg>`,
+remo:`<svg viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg"><rect x="8" y="50" width="74" height="14" rx="3" fill="#2A2D50"/><circle cx="45" cy="22" r="9" fill="#00F5A0"/><line x1="45" y1="31" x2="45" y2="55" stroke="#C4B5FD" stroke-width="3.5" stroke-linecap="round"/><line x1="45" y1="38" x2="25" y2="48" stroke="#C4B5FD" stroke-width="3" stroke-linecap="round"/><line x1="45" y1="38" x2="65" y2="48" stroke="#C4B5FD" stroke-width="3" stroke-linecap="round"/><circle cx="13" cy="45" r="4" fill="#FF8C00" opacity=".9"/><circle cx="77" cy="45" r="4" fill="#FF8C00" opacity=".9"/></svg>`,
+curl_bicep:`<svg viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg"><circle cx="45" cy="14" r="9" fill="#00F5A0"/><line x1="45" y1="23" x2="45" y2="50" stroke="#C4B5FD" stroke-width="3.5" stroke-linecap="round"/><path d="M45 50 Q32 58 28 72" stroke="#C4B5FD" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="26" cy="75" r="5" fill="#FF8C00" opacity=".9"/><line x1="45" y1="50" x2="58" y2="66" stroke="#C4B5FD" stroke-width="3" stroke-linecap="round"/></svg>`,
+correr:`<svg viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg"><circle cx="38" cy="13" r="9" fill="#00F5A0"/><line x1="38" y1="22" x2="42" y2="46" stroke="#C4B5FD" stroke-width="3.5" stroke-linecap="round"/><line x1="42" y1="34" x2="24" y2="28" stroke="#C4B5FD" stroke-width="3" stroke-linecap="round"/><line x1="42" y1="34" x2="60" y2="40" stroke="#C4B5FD" stroke-width="3" stroke-linecap="round"/><line x1="42" y1="46" x2="26" y2="64" stroke="#C4B5FD" stroke-width="3.5" stroke-linecap="round"/><line x1="42" y1="46" x2="58" y2="56" stroke="#C4B5FD" stroke-width="3.5" stroke-linecap="round"/><line x1="26" y1="64" x2="16" y2="78" stroke="#C4B5FD" stroke-width="3" stroke-linecap="round"/><line x1="58" y1="56" x2="70" y2="66" stroke="#C4B5FD" stroke-width="3" stroke-linecap="round"/><rect x="8" y="80" width="74" height="4" rx="2" fill="#2A2D50"/></svg>`,
+peso_muerto:`<svg viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg"><circle cx="45" cy="14" r="9" fill="#00F5A0"/><line x1="45" y1="23" x2="45" y2="58" stroke="#C4B5FD" stroke-width="3.5" stroke-linecap="round"/><line x1="45" y1="36" x2="26" y2="32" stroke="#C4B5FD" stroke-width="3" stroke-linecap="round"/><line x1="45" y1="36" x2="64" y2="32" stroke="#C4B5FD" stroke-width="3" stroke-linecap="round"/><line x1="45" y1="58" x2="36" y2="76" stroke="#C4B5FD" stroke-width="3.5" stroke-linecap="round"/><line x1="45" y1="58" x2="54" y2="76" stroke="#C4B5FD" stroke-width="3.5" stroke-linecap="round"/><rect x="18" y="74" width="54" height="8" rx="3" fill="#FF8C00" opacity=".9"/><circle cx="12" cy="78" r="6" fill="#8B8FB0"/><circle cx="78" cy="78" r="6" fill="#8B8FB0"/></svg>`,
+hombro:`<svg viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg"><circle cx="45" cy="20" r="9" fill="#00F5A0"/><line x1="45" y1="29" x2="45" y2="55" stroke="#C4B5FD" stroke-width="3.5" stroke-linecap="round"/><path d="M45 40 Q28 30 22 18" stroke="#C4B5FD" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M45 40 Q62 30 68 18" stroke="#C4B5FD" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="20" cy="15" r="5" fill="#FF8C00" opacity=".9"/><circle cx="70" cy="15" r="5" fill="#FF8C00" opacity=".9"/><line x1="45" y1="55" x2="34" y2="72" stroke="#C4B5FD" stroke-width="3.5" stroke-linecap="round"/><line x1="45" y1="55" x2="56" y2="72" stroke="#C4B5FD" stroke-width="3.5" stroke-linecap="round"/></svg>`,
+extension_cuad:`<svg viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg"><rect x="20" y="28" width="50" height="22" rx="5" fill="#2A2D50"/><circle cx="45" cy="20" r="9" fill="#00F5A0"/><line x1="45" y1="29" x2="45" y2="50" stroke="#C4B5FD" stroke-width="3.5" stroke-linecap="round"/><line x1="45" y1="50" x2="32" y2="66" stroke="#C4B5FD" stroke-width="3.5" stroke-linecap="round"/><line x1="45" y1="50" x2="58" y2="66" stroke="#C4B5FD" stroke-width="3.5" stroke-linecap="round"/><rect x="24" y="74" width="8" height="6" rx="2" fill="#FF8C00" opacity=".9"/><rect x="58" y="74" width="8" height="6" rx="2" fill="#FF8C00" opacity=".9"/></svg>`,
+glute_bridge:`<svg viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg"><rect x="6" y="75" width="78" height="6" rx="2" fill="#2A2D50"/><circle cx="20" cy="52" r="9" fill="#00F5A0"/><path d="M20 61 Q30 72 45 65 Q60 58 70 62" stroke="#C4B5FD" stroke-width="3.5" fill="none" stroke-linecap="round"/><line x1="70" y1="62" x2="76" y2="75" stroke="#C4B5FD" stroke-width="3.5" stroke-linecap="round"/><line x1="20" y1="61" x2="20" y2="76" stroke="#C4B5FD" stroke-width="3.5" stroke-linecap="round"/><circle cx="45" cy="62" r="7" fill="#FF2D78" opacity=".5"/></svg>`,
+bicicleta:`<svg viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg"><circle cx="22" cy="68" r="14" fill="none" stroke="#8B8FB0" stroke-width="3"/><circle cx="68" cy="68" r="14" fill="none" stroke="#8B8FB0" stroke-width="3"/><circle cx="22" cy="68" r="4" fill="#00F5A0"/><circle cx="68" cy="68" r="4" fill="#00F5A0"/><line x1="22" y1="68" x2="45" y2="50" stroke="#8B8FB0" stroke-width="2.5" stroke-linecap="round"/><line x1="68" y1="68" x2="45" y2="50" stroke="#8B8FB0" stroke-width="2.5" stroke-linecap="round"/><line x1="45" y1="50" x2="52" y2="35" stroke="#8B8FB0" stroke-width="2.5" stroke-linecap="round"/><circle cx="44" cy="22" r="8" fill="#00F5A0"/></svg>`,
+plancha:`<svg viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg"><rect x="6" y="75" width="78" height="5" rx="2" fill="#2A2D50"/><circle cx="18" cy="42" r="9" fill="#00F5A0"/><line x1="18" y1="51" x2="72" y2="60" stroke="#C4B5FD" stroke-width="3.5" stroke-linecap="round"/><line x1="28" y1="50" x2="30" y2="75" stroke="#C4B5FD" stroke-width="3" stroke-linecap="round"/><line x1="62" y1="57" x2="66" y2="75" stroke="#C4B5FD" stroke-width="3" stroke-linecap="round"/><line x1="18" y1="42" x2="36" y2="38" stroke="#C4B5FD" stroke-width="3" stroke-linecap="round"/></svg>`,
+fondos:`<svg viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg"><rect x="10" y="55" width="18" height="28" rx="3" fill="#2A2D50"/><rect x="62" y="55" width="18" height="28" rx="3" fill="#2A2D50"/><circle cx="45" cy="18" r="9" fill="#00F5A0"/><line x1="45" y1="27" x2="45" y2="54" stroke="#C4B5FD" stroke-width="3.5" stroke-linecap="round"/><line x1="45" y1="40" x2="19" y2="52" stroke="#C4B5FD" stroke-width="3" stroke-linecap="round"/><line x1="45" y1="40" x2="71" y2="52" stroke="#C4B5FD" stroke-width="3" stroke-linecap="round"/></svg>`,
+hip_thrust:`<svg viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg"><rect x="6" y="75" width="78" height="6" rx="2" fill="#2A2D50"/><rect x="15" y="46" width="22" height="16" rx="4" fill="#2A2D50"/><circle cx="26" cy="36" r="9" fill="#00F5A0"/><line x1="26" y1="45" x2="26" y2="54" stroke="#C4B5FD" stroke-width="3.5" stroke-linecap="round"/><path d="M26 54 Q40 46 58 52 Q68 56 72 65" stroke="#C4B5FD" stroke-width="3.5" fill="none" stroke-linecap="round"/><line x1="72" y1="65" x2="74" y2="76" stroke="#C4B5FD" stroke-width="3.5" stroke-linecap="round"/><rect x="44" y="48" width="20" height="10" rx="3" fill="#FF8C00" opacity=".9"/></svg>`,
+zancadas:`<svg viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg"><circle cx="40" cy="14" r="9" fill="#00F5A0"/><line x1="40" y1="23" x2="40" y2="50" stroke="#C4B5FD" stroke-width="3.5" stroke-linecap="round"/><line x1="40" y1="36" x2="22" y2="30" stroke="#C4B5FD" stroke-width="3" stroke-linecap="round"/><line x1="40" y1="36" x2="58" y2="30" stroke="#C4B5FD" stroke-width="3" stroke-linecap="round"/><circle cx="18" cy="28" r="5" fill="#FF8C00" opacity=".9"/><circle cx="62" cy="28" r="5" fill="#FF8C00" opacity=".9"/><line x1="40" y1="50" x2="20" y2="68" stroke="#C4B5FD" stroke-width="3.5" stroke-linecap="round"/><line x1="40" y1="50" x2="62" y2="60" stroke="#C4B5FD" stroke-width="3.5" stroke-linecap="round"/></svg>`,
+remo_inclinado:`<svg viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg"><circle cx="28" cy="22" r="9" fill="#00F5A0"/><path d="M28 31 Q36 42 42 52" stroke="#C4B5FD" stroke-width="3.5" fill="none" stroke-linecap="round"/><line x1="36" y1="40" x2="18" y2="48" stroke="#C4B5FD" stroke-width="3" stroke-linecap="round"/><path d="M36 40 Q56 30 72 36" stroke="#C4B5FD" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="72" cy="35" r="5" fill="#FF8C00" opacity=".9"/><circle cx="14" cy="47" r="5" fill="#FF8C00" opacity=".9"/></svg>`,
+};
+
+const EX={
+sentadilla_barra:{desc:"Ejercicio fundamental para piernas y glúteos: cuádriceps, isquios y glúteo mayor en un solo movimiento.",pos:"Pies al ancho de hombros, barra sobre los trapecios (no en el cuello). Agarre un poco más ancho que los hombros.",pasos:["Inhala, activa el abdomen y saca pecho.","Baja flexionando rodillas y caderas como si te sentaras hacia atrás.","Baja hasta que los muslos queden paralelos al suelo (90°).","Empuja desde los talones para subir con caderas y rodillas al mismo tiempo.","Exhala arriba. No bloquees las rodillas."],tip:"Si las rodillas se van hacia adentro al subir, el peso es demasiado alto o faltan glúteos."},
+peso_muerto:{desc:"Trabaja toda la cadena posterior: espalda baja, glúteos e isquiotibiales. Uno de los movimientos más completos del gym.",pos:"Pies al ancho de caderas, barra sobre el empeine casi tocando las espinillas. Agarre justo por fuera de las piernas.",pasos:["Rodillas dobladas, espalda recta, pecho apuntando al frente.","Inhala y activa fuerte el abdomen.","Empuja el suelo con los talones subiendo la barra pegada a las piernas.","Caderas y hombros suben al mismo ritmo.","Extiende caderas apretando glúteos arriba. Baja controlado."],tip:"El error más común es redondear la espalda baja. Si no puedes mantenerla recta, baja el peso."},
+extension_cuad:{desc:"Aislamiento de cuádricep en máquina. Ideal para complementar sentadillas y fortalecer la rodilla.",pos:"Respaldo ajustado para que el hueco de la rodilla quede al borde del asiento. Rodillo sobre el tobillo.",pasos:["Extiende las rodillas levantando el rodillo hasta quedar paralelo al suelo.","Aguanta 1 seg arriba apretando el cuádricep.","Baja en 3 segundos resistiendo el peso. No dejes caer.","Sin que el peso descanse completamente abajo entre reps."],tip:"Bajar lento es más efectivo que subir rápido: el músculo trabaja más en la fase excéntrica."},
+intervalos_caminadora:{desc:"Cardio en intervalos que replica el esfuerzo real del fútbol: arranques y recuperaciones repetidas.",pos:"Postura erguida, mirada al frente. Agarra los bordes solo al inicio.",pasos:["3 min suave (5 km/h) de calentamiento.","1 min rápido (8-9 km/h) · 1 min recuperación (5 km/h).","Repite el ciclo 7 veces (14 min).","3 min suave para enfriar."],tip:"Si no puedes hablar durante el intervalo rápido, el ritmo es el correcto."},
+prensa_pecho:{desc:"Ejercicio de empuje para pecho, hombros anteriores y tríceps. Más seguro que el press libre para aprender el patrón.",pos:"Asiento ajustado: manijas al nivel del pecho medio. Espalda completamente apoyada.",pasos:["Inhala y activa el abdomen contra el respaldo.","Empuja las manijas hacia adelante de forma controlada.","No bloquees los codos al llegar al frente.","Regresa lento (2-3 seg) sintiendo el pecho trabajar."],tip:"Imagina que quieres juntar las manos al empujar: eso activa más el pecho."},
+press_hombros_mancuerna:{desc:"Desarrolla el deltoides en sus tres porciones y los tríceps. Versión con mancuernas que trabaja cada brazo de forma independiente.",pos:"Sentado o de pie, mancuerna en cada mano a la altura de las orejas, codos a 90°, palmas adelante.",pasos:["Activa el abdomen para no arquear la espalda baja.","Empuja ambas mancuernas hacia arriba hasta casi juntar las manos.","Baja lento y controlado hasta volver a 90° de codo.","Exhala al subir, inhala al bajar."],tip:"Si arqueas la espalda al subir, el peso es demasiado alto."},
+fondos_paralelas:{desc:"Empuje con peso corporal que trabaja pecho inferior, tríceps y hombros anteriores.",pos:"Sujétate a las barras con brazos extendidos, pies cruzados hacia atrás, cuerpo recto.",pasos:["Inclina el torso ligeramente adelante para activar más el pecho.","Baja doblando codos hacia afuera y atrás, controlado.","Baja hasta que los hombros queden bajo los codos (90°).","Empuja hacia arriba sin hacer rebote abajo."],tip:"Si no completas las reps, usa la máquina de fondos asistida con contrapeso."},
+plancha_abdominal:{desc:"Ejercicio isométrico que fortalece el core profundo, espalda baja y hombros estabilizadores.",pos:"Antebrazos en el suelo, codos bajo los hombros. Puntas de pies apoyadas. Cuerpo en línea recta.",pasos:["Aprieta abdomen como si fueras a recibir un golpe. Mantén toda la serie.","Aprieta también los glúteos para que la cadera no baje.","Cabeza alineada con la columna, mirando al suelo.","Respira de forma continua. No contengas el aire."],tip:"30 seg perfectos valen más que 60 seg mal hechos. Para cuando la cadera ceda."},
+bicicleta_intervalos:{desc:"Cardio de bajo impacto articular para quemar grasa y mejorar resistencia sin castigar rodillas.",pos:"Asiento: rodilla ligeramente doblada al extender la pierna del todo. Manubrio a altura cómoda.",pasos:["5 min suave nivel 3-4 para calentar.","Alterna 1 min fuerte (nivel 7-8) / 1 min suave (nivel 4) por 15 min.","5 min nivel 3 para enfriar."],tip:"Cadencia alta con resistencia moderada quema más grasa que resistencia máxima con cadencia lenta."},
+caminadora_inclinada:{desc:"Cardio de bajo impacto con alta inclinación. Quema más calorías que caminar plano y activa glúteos e isquios.",pos:"Ajusta velocidad primero, luego sube inclinación. No te agarres de las barras: eso cancela el efecto.",pasos:["2 min sin inclinación para adaptarte.","Sube a 8-10% manteniendo la velocidad.","Apoya talón primero, empuja con el antepié.","Torso erguido, brazos moviéndose natural.","Si necesitas agarrarte, baja la inclinación."],tip:"La inclinación alta recluta glúteos de forma muy eficiente. Es de los mejores ejercicios para tonificar piernas sin impacto."},
+remo_maquina:{desc:"Trabaja dorsal ancho, romboides, trapecio y bíceps. Fundamental para construir la espalda en V.",pos:"Pies en plataforma, rodillas ligeramente dobladas, torso 15-20° adelante. Espalda recta.",pasos:["Pecho fuera y espalda recta durante todo el movimiento.","Tira del mango hacia el abdomen (no al pecho), codos cerca del cuerpo.","Aprieta los omóplatos entre sí 1 seg al llegar atrás.","Regresa lento hasta extender completamente los brazos."],tip:"Imagina que tus manos son ganchos y el movimiento lo inician los codos. Activa más espalda, menos bíceps."},
+remo_inclinado_barra:{desc:"Remo con barra en posición inclinada. Gran activación del dorsal y espalda media para ganar grosor.",pos:"Pies al ancho de hombros, rodillas semiflexionadas, torso a 45°. Agarre pronado al ancho de hombros.",pasos:["Brazos colgando rectos sosteniendo la barra.","Tira la barra hacia el abdomen llevando codos atrás y arriba.","Aprieta omóplatos juntos 1 seg arriba.","Baja lento resistiendo hasta estirar brazos."],tip:"Si el torso oscila arriba y abajo, el peso es demasiado alto. Domina la técnica primero."},
+curl_bicep:{desc:"Aislamiento de bíceps. El ejercicio más directo para desarrollar el volumen del brazo.",pos:"De pie o sentado, mancuerna en cada mano, brazos extendidos a los lados, palmas adelante. Codos pegados al cuerpo.",pasos:["El codo es el punto de pivote: no debe moverse.","Dobla el codo subiendo la mancuerna al hombro.","Aguanta 1 seg apretando el bíceps arriba.","Baja lento en 3 seg resistiendo el peso.","Alterna brazos o hazlos juntos según prefieras."],tip:"Si el hombro sube o el torso se balancea, el peso es demasiado alto."},
+peso_muerto_rumano:{desc:"Variante enfocada en isquiotibiales y glúteos. Las rodillas casi no se doblan.",pos:"Pies al ancho de caderas, barra o mancuernas frente a los muslos. Rodillas ligeramente flexionadas.",pasos:["Empuja las caderas hacia atrás mientras bajas la barra por las piernas.","Sientes estiramiento en la parte trasera de los muslos: es correcto.","Baja hasta donde la flexibilidad permita sin redondear la espalda.","Empuja caderas adelante para subir, apretando glúteos al final."],tip:"Si sientes el estiramiento en isquios, vas bien. Si sientes dolor en espalda baja, para y revisa técnica."},
+press_hombros_barra:{desc:"Versión con barra del press de hombros. Permite más carga para desarrollar deltoides anterior y medio.",pos:"De pie o sentado, barra a la altura de la barbilla frente a la cara. Agarre pronado, un poco más ancho que hombros.",pasos:["Activa fuerte el abdomen antes de empujar.","Empuja la barra hacia arriba pasando frente a la cara (nunca detrás del cuello).","Extiende brazos sin bloquear codos arriba.","Baja controlado hasta nivel de mentón o clavículas."],tip:"Nunca hagas press detrás del cuello: muy agresivo para el manguito rotador."},
+zancadas_mancuerna:{desc:"Ejercicio unilateral para cuádriceps, glúteos e isquios. Mejora además el equilibrio y la estabilidad.",pos:"De pie con mancuerna en cada mano. Pies juntos, mirada al frente.",pasos:["Da un paso largo adelante aterrizando con el talón.","Baja hasta que la rodilla trasera casi toque el suelo.","Rodilla delantera encima del pie, sin sobrepasar la punta.","Empuja desde el talón delantero para volver.","Alterna piernas en cada repetición."],tip:"Si la rodilla cae hacia adentro al bajar, empújala activamente afuera. Falta fuerza en glúteo."},
+carrera_continua:{desc:"Cardio aeróbico a ritmo constante para mejorar capacidad pulmonar, eficiencia cardiaca y resistencia de fútbol.",pos:"Postura erguida, hombros relajados, brazos a 90°. Sube velocidad gradualmente.",pasos:["3 min caminando rápido (6 km/h) para calentar.","Sube a 7-7.5 km/h y mantén constante.","Respira rítmico: inhala 2 zancadas, exhala 2 zancadas.","Si puedes hablar frases cortas pero cuesta, el ritmo es correcto.","3 min bajando velocidad para enfriar."],tip:"La resistencia se construye con constancia semanal. Mejor mismo ritmo más tiempo que más rápido y poco."},
+glute_bridge:{desc:"Activación fundamental de glúteos. Enseña a reclutar el glúteo mayor antes de ejercicios más complejos.",pos:"Boca arriba, rodillas dobladas, pies apoyados al ancho de caderas. Brazos a los lados.",pasos:["Aprieta glúteos y empuja caderas hacia el techo.","Sube hasta que el cuerpo forme línea recta de hombros a rodillas.","Aguanta 1-2 seg arriba apretando el glúteo.","Baja lento sin que el glúteo descanse completamente abajo."],tip:"Si sientes más los isquios que los glúteos, acerca los pies más a las nalgas."},
+hip_thrust_mancuerna:{desc:"Versión con carga del glute bridge. El ejercicio más efectivo para desarrollar y tonificar glúteos según la evidencia.",pos:"Espalda alta apoyada en el borde de un banco. Pies al ancho de caderas, mancuerna sobre las caderas con toalla de protección.",pasos:["Baja caderas hasta casi tocar el suelo.","Empuja caderas arriba apretando fuerte los glúteos.","Sube hasta que el torso quede paralelo al suelo (posición de mesa).","Aguanta 1-2 seg apretando el glúteo.","Mentón ligeramente hacia el pecho."],tip:"La punta del pie ligeramente afuera activa más el glúteo mayor."},
+sentadilla_mancuerna:{desc:"Sentadilla con mancuernas. Más accesible para principiantes, aprende la mecánica con menos carga en la espalda.",pos:"Pies al ancho de hombros, mancuerna a cada lado o una sola sostenida con ambas manos al pecho.",pasos:["Inhala, activa abdomen y saca pecho.","Flexiona rodillas y caderas empujándolas hacia afuera.","Baja hasta muslos paralelos al suelo.","Empuja desde los talones para subir.","Exhala arriba. Talones siempre en el suelo."],tip:"Si los talones se levantan, coloca algo fino debajo hasta mejorar la movilidad de tobillo."},
+zancadas_sin_peso:{desc:"Zancadas sin carga para aprender la mecánica y fortalecer el equilibrio antes de añadir peso.",pos:"De pie, pies juntos, manos en la cintura. Pecho abierto y mirada al frente.",pasos:["Paso largo adelante aterrizando suave con el talón.","Dobla ambas rodillas: delantera baja adelante, trasera baja al suelo.","Rodilla trasera casi toca el suelo sin golpear.","Rodilla delantera no sobrepasa la punta del pie.","Empuja desde el pie delantero para volver."],tip:"Practica frente a un espejo: el torso debe mantenerse erguido durante todo el movimiento."},
+bicicleta_suave:{desc:"Cardio suave de reingreso. Activa el metabolismo y eleva la frecuencia cardiaca sin estresar articulaciones.",pos:"Asiento: rodilla ligeramente doblada cuando el pedal está abajo del todo. Manubrio a altura cómoda.",pasos:["Empieza en nivel 2-3 los primeros 3 min.","Sube a nivel 4-5 donde puedas hablar con normalidad.","Mantén 15 min constantes.","Últimos 2 min nivel 2-3 para enfriar."],tip:"Si puedes hablar pero no cantar, el ritmo es el correcto."},
+plancha_rodillas:{desc:"Versión modificada de la plancha para retomar el ejercicio. Menos demanda sobre hombros y espalda baja.",pos:"Antebrazos en el suelo, codos bajo los hombros. Rodillas apoyadas en lugar de pies. Línea recta de cabeza a rodillas.",pasos:["Activa el abdomen suavemente sin contener la respiración.","Caderas alineadas: ni arriba (pirámide) ni hundidas.","Cuello neutro, mira al suelo.","Respira de forma continua y relajada."],tip:"Cuando sostengas 45 seg sin problema, progresa a la plancha completa con pies."},
+plancha_completa:{desc:"Plancha isométrica completa. Fortalece el core profundo y la estabilidad de columna.",pos:"Antebrazos en el suelo. Puntas de pies apoyadas. Cuerpo en línea perfecta de cabeza a talones.",pasos:["Aprieta abdomen, glúteos y cuádriceps simultáneamente.","Empuja los codos contra el suelo para activar el serrato.","Cabeza alineada, sin bajar ni subir el mentón.","Respira de forma continua.","Para cuando la cadera suba o baje."],tip:"Progresión: +5 seg cada semana. Pequeños avances constantes dan grandes resultados."},
+glute_bridge_pausa:{desc:"Glute bridge con pausa arriba para mayor activación muscular y tonificación de glúteos.",pos:"Igual que el glute bridge básico: boca arriba, rodillas dobladas, pies apoyados.",pasos:["Sube las caderas apretando los glúteos.","MANTÉN 2 seg arriba con el glúteo contraído al máximo.","Baja muy lento (3-4 seg) resistiendo la gravedad.","La pausa y la bajada lenta son lo que diferencia este ejercicio."],tip:"Con el tiempo, coloca una mancuerna ligera sobre las caderas para mayor resistencia."},
+hip_thrust_barra:{desc:"Hip thrust con barra. Al cargar más peso, es la variante más potente para desarrollar glúteos.",pos:"Espalda alta en el borde de un banco. Barra rodada sobre las caderas con toalla de protección. Pies al ancho de caderas.",pasos:["Baja caderas hasta casi tocar el suelo.","Empuja con fuerza caderas hacia arriba apretando glúteos.","Sube hasta que el torso quede paralelo al suelo.","Aguanta 1-2 seg con máxima contracción.","Baja controlado. El peso no debe caer libre."],tip:"Los pies deben estar suficientemente lejos del banco para que las espinillas queden verticales al llegar arriba."},
+sentadilla_sumo:{desc:"Sentadilla con pies muy abiertos. Activa más el glúteo mayor, aductores y glúteo medio.",pos:"Pies mucho más abiertos que los hombros, puntas hacia afuera (45°). Mancuerna con ambas manos entre las piernas.",pasos:["Inhala y activa el abdomen.","Dobla rodillas empujándolas hacia afuera en dirección de los pies.","Baja hasta muslos paralelos al suelo.","Torso lo más vertical posible, pecho fuera.","Empuja desde los talones apretando glúteos al subir."],tip:"Si las rodillas se cierran hacia adentro, reduce el peso o trabaja la movilidad de cadera."},
+caminadora_larga:{desc:"Bloque largo de cardio con alta inclinación. Maximiza la quema de grasa manteniéndote en zona aeróbica.",pos:"Igual que la caminadora inclinada. Sin agarrarte de las barras.",pasos:["3 min plano a 5 km/h para adaptar el cuerpo.","Sube inclinación progresivamente hasta 8% en 2 min.","Mantén 8% y 5-6 km/h por 14 min.","Últimos 3 min: baja la inclinación gradualmente.","Termina 1 min caminando muy suave."],tip:"20 min con inclinación alta equivale en calorías a 15 min corriendo plano, pero con mucho menos impacto."},
+zancadas_con_peso:{desc:"Zancadas con mancuernas. Mayor estímulo muscular en cuádriceps y glúteos.",pos:"De pie, mancuerna en cada mano. El peso no debe comprometer la técnica.",pasos:["Paso largo adelante aterrizando con el talón.","Rodilla trasera casi toca el suelo.","Rodilla delantera encima del pie, sin sobrepasarlo.","Empuja fuerte desde el talón delantero para volver.","Torso erguido durante todo el ejercicio."],tip:"Empieza con 4-6 kg. La progresión gradual es la clave para no lesionarse."},
+glute_bridge_unilateral:{desc:"Glute bridge de una sola pierna. Mucho más exigente y corrige desequilibrios entre piernas.",pos:"Boca arriba, una pierna extendida en el aire. Solo un pie apoyado en el suelo.",pasos:["Aprieta el glúteo de la pierna apoyada y sube caderas.","Cuerpo en línea desde el hombro hasta la rodilla apoyada.","La pierna extendida alineada con el torso, sin dejarla caer.","Aguanta 1-2 seg arriba. Baja lento.","Completa todas las reps de un lado antes de cambiar."],tip:"Si la cadera baja de un lado al subir, es normal: indica que ese glúteo es más débil. El ejercicio lo irá corrigiendo."},
+plancha_toque_hombro:{desc:"Plancha dinámica que añade anti-rotación. El cuerpo resiste el desequilibrio de levantar un brazo.",pos:"Plancha con manos (no antebrazos), brazos extendidos. Pies al ancho de cadera para mayor estabilidad.",pasos:["Core y glúteos bien apretados como en la plancha normal.","Levanta la mano derecha y toca el hombro izquierdo.","Vuelve la mano al suelo estabilizando.","Repite con la mano izquierda tocando hombro derecho.","La cadera NO debe rotar ni oscilar. Ese es el desafío."],tip:"Si la cadera oscila, abre más los pies. Luego júntalos progresivamente."},
+};
+
+const routines={
+yo:{days:[
+  {name:"Lunes",short:"L",title:"Piernas + Resistencia",focus:"Cuádriceps · Isquios · Glúteos · Cardio intervalos",
+   warmup:"10 min caminadora moderada (inclinación 3%) + 2 min saltos suaves en el lugar",
+   cooldown:"5 min caminadora lenta + estiramientos de cuádriceps e isquios 30 seg c/u",
+   exercises:[
+     {name:"Sentadilla con barra",img:"sentadilla",s:4,r:"10-12",t:"90s",k:"sentadilla_barra"},
+     {name:"Peso muerto",img:"peso_muerto",s:4,r:"8-10",t:"2min",k:"peso_muerto"},
+     {name:"Extensión de cuádriceps",img:"extension_cuad",s:3,r:"15",t:"60s",k:"extension_cuad"},
+     {name:"Intervalos en caminadora",img:"correr",s:1,r:"20min",t:"—",k:"intervalos_caminadora"},
+   ]},
+  {name:"Martes",short:"M",title:"Pecho + Tríceps + Core",focus:"Pecho · Tríceps · Abdomen",
+   warmup:"5 min bicicleta + movilidad de hombros (círculos 15 rep c/brazo)",
+   cooldown:"Estiramiento pectoral en pared 30s · tríceps 20s cada lado",
+   exercises:[
+     {name:"Prensa de pecho",img:"prensa_pecho",s:4,r:"10-12",t:"90s",k:"prensa_pecho"},
+     {name:"Press hombros con mancuernas",img:"hombro",s:3,r:"12",t:"75s",k:"press_hombros_mancuerna"},
+     {name:"Fondos en paralelas",img:"fondos",s:3,r:"12-15",t:"75s",k:"fondos_paralelas"},
+     {name:"Plancha abdominal",img:"plancha",s:3,r:"45s",t:"45s",k:"plancha_abdominal"},
+   ]},
+  {name:"Miérc.",short:"Mi",title:"Cardio + Agilidad",focus:"Resistencia cardiorrespiratoria · Agilidad fútbol",
+   warmup:"5 min bicicleta nivel bajo + estiramientos dinámicos piernas y caderas",
+   cooldown:"5 min caminadora muy lenta + estiramientos generales 5 min",
+   exercises:[
+     {name:"Bicicleta estática intervalos",img:"bicicleta",s:1,r:"25min",t:"—",k:"bicicleta_intervalos"},
+     {name:"Caminadora inclinada",img:"correr",s:1,r:"15min",t:"—",k:"caminadora_inclinada"},
+     {name:"Sentadilla con mancuernas",img:"sentadilla",s:3,r:"15",t:"60s",k:"sentadilla_mancuerna"},
+     {name:"Plancha + variaciones",img:"plancha",s:3,r:"40s",t:"30s",k:"plancha_completa"},
+   ]},
+  {name:"Jueves",short:"J",title:"Espalda + Bíceps",focus:"Dorsal · Trapecio · Bíceps · Espalda baja",
+   warmup:"5 min caminadora suave + rotaciones de columna y movilidad de hombros",
+   cooldown:"Dorsal colgado en barra 30s · estiramiento bíceps 20s",
+   exercises:[
+     {name:"Remo en máquina",img:"remo",s:4,r:"10-12",t:"90s",k:"remo_maquina"},
+     {name:"Remo inclinado con barra",img:"remo_inclinado",s:3,r:"10",t:"90s",k:"remo_inclinado_barra"},
+     {name:"Curl de bíceps con mancuernas",img:"curl_bicep",s:3,r:"12 c/brazo",t:"60s",k:"curl_bicep"},
+     {name:"Peso muerto rumano",img:"peso_muerto",s:3,r:"12",t:"90s",k:"peso_muerto_rumano"},
+   ]},
+  {name:"Viernes",short:"V",title:"Hombros + Resistencia",focus:"Hombros · Trapecio · Cardio final de semana",
+   warmup:"5 min bicicleta + círculos de hombro y péndulos de brazo",
+   cooldown:"5 min caminadora suave + estiramiento completo 8 min",
+   exercises:[
+     {name:"Press hombros con barra",img:"hombro",s:4,r:"10",t:"90s",k:"press_hombros_barra"},
+     {name:"Prensa de pecho (ángulo)",img:"prensa_pecho",s:3,r:"12",t:"75s",k:"prensa_pecho"},
+     {name:"Zancadas con mancuernas",img:"zancadas",s:3,r:"12 c/pierna",t:"75s",k:"zancadas_mancuerna"},
+     {name:"Carrera continua caminadora",img:"correr",s:1,r:"20min",t:"—",k:"carrera_continua"},
+   ]},
+]},
+pareja:{days:[
+  {name:"Lunes",short:"L",title:"Glúteos + Cardio suave",focus:"Activación glútea · Cardio bajo impacto · Re-acondicionamiento",
+   warmup:"8 min bicicleta nivel muy bajo + activación de glúteos (aprieta y suelta x20)",
+   cooldown:"5 min caminadora muy lenta + estiramiento cadera y glúteos 5 min",
+   exercises:[
+     {name:"Glute bridge (puente glúteo)",img:"glute_bridge",s:3,r:"15",t:"60s",k:"glute_bridge"},
+     {name:"Extensión de cuádriceps",img:"extension_cuad",s:3,r:"15",t:"60s",k:"extension_cuad"},
+     {name:"Bicicleta estática suave",img:"bicicleta",s:1,r:"20min",t:"—",k:"bicicleta_suave"},
+     {name:"Plancha (sobre rodillas)",img:"plancha",s:3,r:"30s",t:"45s",k:"plancha_rodillas"},
+   ]},
+  {name:"Martes",short:"M",title:"Piernas completas",focus:"Cuádriceps · Glúteos · Isquios · Tonificación",
+   warmup:"5 min caminadora sin inclinación suave + sentadillas sin peso x10",
+   cooldown:"Estiramiento cuádriceps, isquios y cadera · 30s cada postura",
+   exercises:[
+     {name:"Sentadilla con mancuernas",img:"sentadilla",s:3,r:"12-15",t:"75s",k:"sentadilla_mancuerna"},
+     {name:"Hip thrust con mancuerna",img:"hip_thrust",s:4,r:"15",t:"75s",k:"hip_thrust_mancuerna"},
+     {name:"Zancadas sin peso",img:"zancadas",s:3,r:"10 c/pierna",t:"60s",k:"zancadas_sin_peso"},
+     {name:"Caminadora inclinada",img:"correr",s:1,r:"15min",t:"—",k:"caminadora_inclinada"},
+   ]},
+  {name:"Miérc.",short:"Mi",title:"Cardio + Core",focus:"Quema de grasa · Abdomen · Descanso muscular activo",
+   warmup:"5 min bicicleta suave + rotaciones de cadera y espalda",
+   cooldown:"Respiración profunda 2 min + estiramiento espalda baja y abdomen",
+   exercises:[
+     {name:"Bicicleta intervalos suaves",img:"bicicleta",s:1,r:"25min",t:"—",k:"bicicleta_suave"},
+     {name:"Plancha abdominal completa",img:"plancha",s:3,r:"35s",t:"45s",k:"plancha_completa"},
+     {name:"Glute bridge con pausa",img:"glute_bridge",s:3,r:"20",t:"60s",k:"glute_bridge_pausa"},
+     {name:"Caminadora paso rápido",img:"correr",s:1,r:"10min",t:"—",k:"caminadora_inclinada"},
+   ]},
+  {name:"Jueves",short:"J",title:"Glúteos + Piernas",focus:"Glúteos · Muslos · Caderas · Tonificación intensa",
+   warmup:"5 min bicicleta + puentes de glúteo sin peso x15",
+   cooldown:"Estiramiento paloma (cadera) 45s cada lado · Isquios",
+   exercises:[
+     {name:"Hip thrust con barra ligera",img:"hip_thrust",s:4,r:"12-15",t:"75s",k:"hip_thrust_barra"},
+     {name:"Extensión de cuádriceps",img:"extension_cuad",s:3,r:"15",t:"60s",k:"extension_cuad"},
+     {name:"Sentadilla sumo con mancuerna",img:"sentadilla",s:3,r:"15",t:"75s",k:"sentadilla_sumo"},
+     {name:"Caminadora inclinada",img:"correr",s:1,r:"15min",t:"—",k:"caminadora_inclinada"},
+   ]},
+  {name:"Viernes",short:"V",title:"Cardio + Cuerpo completo",focus:"Cardio sostenido · Quema calórica final de semana",
+   warmup:"5 min bicicleta + estiramientos dinámicos generales",
+   cooldown:"Estiramiento completo 10 min. ¡Bien merecido el fin de semana!",
+   exercises:[
+     {name:"Caminadora inclinada larga",img:"correr",s:1,r:"20min",t:"—",k:"caminadora_larga"},
+     {name:"Zancadas con mancuernas",img:"zancadas",s:3,r:"12 c/pierna",t:"75s",k:"zancadas_con_peso"},
+     {name:"Glute bridge una pierna",img:"glute_bridge",s:3,r:"12 c/pierna",t:"60s",k:"glute_bridge_unilateral"},
+     {name:"Plancha + toque de hombro",img:"plancha",s:3,r:"10 toques c/lado",t:"45s",k:"plancha_toque_hombro"},
+   ]},
+]},
+};
+
+// Estado: done[persona][dia][exIdx] = bool
+let person='yo', day=0, openDet=new Set();
+const done={yo:Array.from({length:5},()=>[]),pareja:Array.from({length:5},()=>[])};
+
+function key(p,d,i){return p+'_'+d+'_'+i}
+
+function totalEx(p){return routines[p].days.reduce((a,d)=>a+d.exercises.length,0)}
+function doneWeek(p){
+  let c=0;
+  routines[p].days.forEach((d,di)=>d.exercises.forEach((_,i)=>{if(done[p][di][i])c++}));
+  return c;
+}
+function doneDay(p,d){
+  return routines[p].days[d].exercises.filter((_,i)=>done[p][d][i]).length;
+}
+function totalDay(p,d){return routines[p].days[d].exercises.length}
+
+function pct(a,b){return b?Math.round(a/b*100):0}
+
+function updateWeekProg(){
+  const tw=totalEx(person), dw=doneWeek(person), p=pct(dw,tw);
+  document.getElementById('wpPct').textContent=p+'%';
+  document.getElementById('wpFill').style.width=p+'%';
+  document.getElementById('wpLabel').textContent='Progreso semanal ('+dw+'/'+tw+' ejercicios)';
+}
+
+function updateDayRing(){
+  const td=totalDay(person,day), dd=doneDay(person,day), p=pct(dd,td);
+  document.getElementById('dpPct').textContent=p+'%';
+  document.getElementById('dpTitle').textContent=p===100?'¡Día completado! 🎉':dd+' de '+td+' ejercicios completados';
+  document.getElementById('dpSub').textContent=p===100?'Excelente trabajo. Descansa y recupérate.':'Marca cada ejercicio al terminarlo';
+  const circ=document.getElementById('dpRingFill');
+  const r=18, circum=2*Math.PI*r;
+  circ.style.strokeDasharray=circum;
+  circ.style.strokeDashoffset=circum*(1-p/100);
+}
+
+function toggleDone(idx){
+  done[person][day][idx]=!done[person][day][idx];
+  const card=document.getElementById('exc-'+idx);
+  const btn=document.getElementById('chk-'+idx);
+  const txt=document.getElementById('chktxt-'+idx);
+  const isDone=done[person][day][idx];
+  card.classList.toggle('done',isDone);
+  txt.textContent=isDone?'¡Completado!':'Marcar como completado';
+  updateWeekProg();
+  updateDayRing();
+  renderDayDots();
+}
+
+function toggleDet(idx){
+  const det=document.getElementById('det-'+idx);
+  const btn=document.getElementById('expbtn-'+idx);
+  if(openDet.has(idx)){openDet.delete(idx);det.classList.remove('open');btn.classList.remove('open');btn.querySelector('.btxt').textContent='Ver cómo hacerlo';}
+  else{openDet.add(idx);det.classList.add('open');btn.classList.add('open');btn.querySelector('.btxt').textContent='Ocultar descripción';}
+}
+
+function setPerson(p){
+  person=p;day=0;openDet.clear();
+  document.querySelectorAll('.ptab').forEach((t,i)=>t.classList.toggle('active',i===(p==='yo'?0:1)));
+  renderDayTabs();renderContent();updateWeekProg();
+}
+function setDay(d){
+  day=d;openDet.clear();
+  document.querySelectorAll('.dtab').forEach((t,i)=>t.classList.toggle('active',i===d));
+  renderContent();window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function renderDayDots(){
+  document.querySelectorAll('.dtab').forEach((t,i)=>{
+    const existing=t.querySelector('.dtick');
+    const allDone=doneDay(person,i)===totalDay(person,i)&&totalDay(person,i)>0;
+    if(allDone&&!existing){const s=document.createElement('span');s.className='dtick';t.appendChild(s);}
+    else if(!allDone&&existing){existing.remove();}
+  });
+}
+
+function renderDayTabs(){
+  document.getElementById('dayTabs').innerHTML=routines[person].days.map((d,i)=>`<button class="dtab${i===day?' active':''}" onclick="setDay(${i})">${d.short} · ${d.name}</button>`).join('');
+  renderDayDots();
+}
+
+function renderContent(){
+  const d=routines[person].days[day];
+  const td=totalDay(person,day), dd=doneDay(person,day), p=pct(dd,td);
+  const r=18,circum=2*Math.PI*r;
+  const offset=circum*(1-p/100);
+  let html=`
+  <div class="dhdr"><div class="dtitle">${d.name} — ${d.title}</div><div class="dfocus">${d.focus}</div></div>
+  <div class="day-prog">
+    <div class="day-prog-ring">
+      <svg viewBox="0 0 44 44">
+        <defs><linearGradient id="rg" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#3C3489"/><stop offset="100%" stop-color="#1D9E75"/></linearGradient></defs>
+        <circle class="ring-bg" cx="22" cy="22" r="${r}"/>
+        <circle class="ring-fill" id="dpRingFill" cx="22" cy="22" r="${r}" style="stroke-dasharray:${circum};stroke-dashoffset:${offset}"/>
+      </svg>
+      <span class="day-prog-pct" id="dpPct">${p}%</span>
+    </div>
+    <div class="day-prog-info">
+      <div class="day-prog-title" id="dpTitle">${p===100?'¡Día completado! 🎉':dd+' de '+td+' ejercicios completados'}</div>
+      <div class="day-prog-sub" id="dpSub">${p===100?'Excelente trabajo. Descansa y recupérate.':'Marca cada ejercicio al terminarlo'}</div>
+    </div>
+  </div>
+  <div class="banner bw"><div class="blabel">🔥 Calentamiento</div><div class="btext">${d.warmup}</div></div>
+  <div class="exlist">`;
+
+  d.exercises.forEach((ex,i)=>{
+    const info=EX[ex.k]||{};
+    const isDone=!!done[person][day][i];
+    const stepsHTML=(info.pasos||[]).map((p,n)=>`<li data-n="${n+1}">${p}</li>`).join('');
+    html+=`<div class="exc${isDone?' done':''}" id="exc-${i}">
+      <div class="extop">
+        <div class="exillo">${SVG[ex.img]||''}</div>
+        <div class="exbody">
+          <div class="exname">${i+1}. ${ex.name}</div>
+          <div class="badges">
+            <span class="badge bs">📋 ${ex.s} series</span>
+            <span class="badge br">🔁 ${ex.r}</span>
+            <span class="badge bt">⏱ ${ex.t}</span>
+          </div>
+        </div>
+      </div>
+      <button class="expbtn${openDet.has(i)?' open':''}" id="expbtn-${i}" onclick="toggleDet(${i})">
+        <span class="btxt">${openDet.has(i)?'Ocultar descripción':'Ver cómo hacerlo'}</span>
+        <span class="arr">▾</span>
+      </button>
+      <div class="exdet${openDet.has(i)?' open':''}" id="det-${i}">
+        ${info.desc?`<div class="dsec"><div class="dlabel">¿Qué es?</div><div class="dtext">${info.desc}</div></div>`:''}
+        ${info.pos?`<div class="dsec"><div class="dlabel">📍 Posición inicial</div><div class="dtext">${info.pos}</div></div>`:''}
+        ${stepsHTML?`<div class="dsec"><div class="dlabel">▶ Cómo ejecutarlo</div><ul class="dsteps">${stepsHTML}</ul></div>`:''}
+        ${info.tip?`<div class="tipbox">💡 <strong>Consejo:</strong> ${info.tip}</div>`:''}
+      </div>
+      <button class="chkbtn" id="chk-${i}" onclick="toggleDone(${i})">
+        <div class="chk-circle">
+          <svg width="11" height="9" viewBox="0 0 11 9" fill="none"><polyline points="1,4.5 4,7.5 10,1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <span class="chk-txt" id="chktxt-${i}">${isDone?'¡Completado!':'Marcar como completado'}</span>
+      </button>
+    </div>`;
+  });
+
+  html+=`</div><div class="banner bc"><div class="blabel">🌿 Vuelta a la calma</div><div class="btext">${d.cooldown}</div></div>`;
+  document.getElementById('content').innerHTML=html;
+}
+
+renderDayTabs();
+renderContent();
+updateWeekProg();
+</script>
+</body>
+</html>
