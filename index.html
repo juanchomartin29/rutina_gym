@@ -121,6 +121,7 @@ body{font-family:'Nunito',-apple-system,BlinkMacSystemFont,sans-serif;background
   <div class="htop">
     <span style="font-size:22px">💪</span>
     <h1>Rutina semanal de gym</h1>
+    <button onclick="resetSemana()" style="flex-shrink:0;background:rgba(255,45,120,.15);border:1px solid rgba(255,45,120,.4);color:#FF2D78;border-radius:8px;padding:5px 10px;font-size:10px;font-weight:800;cursor:pointer;-webkit-appearance:none" title="Reiniciar semana">↺ Reset</button>
   </div>
   <div class="prog-wrap">
     <div class="prog-row">
@@ -289,9 +290,11 @@ pareja:{days:[
 ]},
 };
 
-// Estado: done[persona][dia][exIdx] = bool
+// Estado con persistencia localStorage
 let person='yo', day=0, openDet=new Set();
-const done={yo:Array.from({length:5},()=>[]),pareja:Array.from({length:5},()=>[])};
+function loadDone(){try{const s=localStorage.getItem('gym_done');return s?JSON.parse(s):{yo:Array.from({length:5},()=>[]),pareja:Array.from({length:5},()=>[])};}catch(e){return {yo:Array.from({length:5},()=>[]),pareja:Array.from({length:5},()=>[])};}}
+function saveDone(){try{localStorage.setItem('gym_done',JSON.stringify(done));}catch(e){}}
+const done=loadDone();
 
 function key(p,d,i){return p+'_'+d+'_'+i}
 
@@ -329,11 +332,19 @@ function updateDayRing(){
 function toggleDone(idx){
   done[person][day][idx]=!done[person][day][idx];
   const card=document.getElementById('exc-'+idx);
-  const btn=document.getElementById('chk-'+idx);
   const txt=document.getElementById('chktxt-'+idx);
   const isDone=done[person][day][idx];
   card.classList.toggle('done',isDone);
   txt.textContent=isDone?'¡Completado!':'Marcar como completado';
+  // Al completar, cerrar detalle si está abierto
+  if(isDone && openDet.has(idx)){
+    openDet.delete(idx);
+    const det=document.getElementById('det-'+idx);
+    const expbtn=document.getElementById('expbtn-'+idx);
+    if(det){det.classList.remove('open');}
+    if(expbtn){expbtn.classList.remove('open');expbtn.querySelector('.btxt').textContent='Ver cómo hacerlo';}
+  }
+  saveDone();
   updateWeekProg();
   updateDayRing();
   renderDayDots();
@@ -432,6 +443,12 @@ function renderContent(){
 
   html+=`</div><div class="banner bc"><div class="blabel">🌿 Vuelta a la calma</div><div class="btext">${d.cooldown}</div></div>`;
   document.getElementById('content').innerHTML=html;
+}
+
+function resetSemana(){
+  if(!confirm('¿Reiniciar todos los ejercicios completados de esta semana?'))return;
+  routines[person].days.forEach((_,di)=>routines[person].days[di].exercises.forEach((_,i)=>{done[person][di][i]=false;}));
+  saveDone();openDet.clear();renderDayTabs();renderContent();updateWeekProg();
 }
 
 renderDayTabs();
