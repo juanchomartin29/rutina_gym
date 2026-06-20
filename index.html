@@ -42,8 +42,6 @@ body{font-family:'Nunito',-apple-system,BlinkMacSystemFont,sans-serif;background
 .dtabs{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-bottom:7px}
 .dtab{padding:6px 4px;border-radius:8px;border:1.5px solid var(--bd);font-size:10px;font-weight:800;cursor:pointer;background:var(--card);color:var(--ts);white-space:nowrap;-webkit-appearance:none;transition:all .15s;text-align:center}
 .dtab.active{background:var(--acc);color:#0D1410;border-color:var(--acc)}
-.dtab .dtick{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--acc);margin-left:3px;vertical-align:middle}
-.dtab.active .dtick{background:#0D1410}
 
 .dnow{padding:8px 10px;background:var(--card);border:1px solid var(--bd);border-radius:10px;display:flex;align-items:center;justify-content:space-between;gap:8px}
 .savebtn{flex-shrink:0;background:rgba(61,220,151,.15);border:1.5px solid var(--acc);color:var(--acc);border-radius:8px;padding:7px 9px;font-size:9.5px;font-weight:800;cursor:pointer;-webkit-appearance:none;white-space:nowrap}
@@ -204,6 +202,7 @@ zancadas:`<svg viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg"><circle cx
 remo_inclinado:`<svg viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg"><circle cx="28" cy="22" r="9" fill="#3DDC97"/><path d="M28 31 Q36 42 42 52" stroke="#9FB3C8" stroke-width="3.5" fill="none" stroke-linecap="round"/><line x1="36" y1="40" x2="18" y2="48" stroke="#9FB3C8" stroke-width="3" stroke-linecap="round"/><path d="M36 40 Q56 30 72 36" stroke="#9FB3C8" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="72" cy="35" r="5" fill="#E8A33D" opacity=".9"/><circle cx="14" cy="47" r="5" fill="#E8A33D" opacity=".9"/></svg>`,
 abdominal_rueda:`<svg viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg"><circle cx="45" cy="65" r="13" fill="none" stroke="#9FB3C8" stroke-width="4"/><circle cx="45" cy="65" r="3" fill="#3DDC97"/><circle cx="18" cy="28" r="9" fill="#3DDC97"/><line x1="18" y1="37" x2="35" y2="55" stroke="#9FB3C8" stroke-width="3.5" stroke-linecap="round"/><line x1="35" y1="55" x2="45" y2="58" stroke="#9FB3C8" stroke-width="3.5" stroke-linecap="round"/></svg>`,
 escaladora:`<svg viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg"><circle cx="32" cy="14" r="9" fill="#3DDC97"/><line x1="32" y1="23" x2="38" y2="44" stroke="#9FB3C8" stroke-width="3.5" stroke-linecap="round"/><line x1="38" y1="44" x2="24" y2="62" stroke="#9FB3C8" stroke-width="3.5" stroke-linecap="round"/><line x1="38" y1="44" x2="56" y2="50" stroke="#9FB3C8" stroke-width="3.5" stroke-linecap="round"/><rect x="10" y="64" width="70" height="6" rx="2" fill="#2C3040"/><rect x="20" y="50" width="50" height="6" rx="2" fill="#2C3040"/><rect x="30" y="36" width="50" height="6" rx="2" fill="#2C3040"/></svg>`,
+curl_scott:`<svg viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg"><rect x="22" y="48" width="46" height="32" rx="6" fill="#2C3040"/><rect x="30" y="38" width="30" height="16" rx="4" fill="#3A3F55"/><circle cx="45" cy="20" r="9" fill="#3DDC97"/><line x1="45" y1="29" x2="42" y2="42" stroke="#9FB3C8" stroke-width="3.5" stroke-linecap="round"/><line x1="42" y1="42" x2="55" y2="48" stroke="#9FB3C8" stroke-width="3.5" stroke-linecap="round"/><rect x="48" y="44" width="26" height="6" rx="3" fill="#E8A33D" opacity=".9"/><circle cx="18" cy="46" r="6" fill="#9FB3C8"/><circle cx="76" cy="46" r="6" fill="#9FB3C8"/></svg>`,
 };
 
 const EX={
@@ -239,6 +238,7 @@ zancadas_con_peso:{desc:"Zancadas con mancuernas para sumar más exigencia al ej
 glute_bridge_unilateral:{desc:"Glute bridge con una sola pierna. Más exigente que el normal, ayuda a parejar la fuerza entre tu lado izquierdo y derecho.",pos:"Acostado boca arriba, rodillas dobladas. Estira una pierna hacia arriba (apuntando al techo) y deja el otro pie apoyado en el piso.",pasos:["Aprieta el glúteo del lado que sí está apoyado en el piso y sube la cadera.","Aguanta 1-2 segundos arriba, bien apretado.","Baja despacio, sin dejar caer la cadera de golpe."],tip:"Es normal que un lado te cueste más que el otro al principio. Con el tiempo y la práctica se va parejando."},
 abdominal_rueda:{desc:"Ejercicio más avanzado para todo el abdomen, usando la rueda con mango (la que tiene una rueda en el centro y dos agarraderas).",pos:"Ponte de rodillas sobre una colchoneta, sujeta la rueda con las dos manos, colócala en el piso justo frente a ti.",pasos:["Rueda hacia adelante, estirando tu cuerpo poco a poco, solo hasta donde puedas controlar sin que la espalda se hunda.","No dejes que tu espalda baja se hunda hacia el piso en ningún momento.","Usa la fuerza del abdomen (no de los brazos) para volver a la posición inicial."],tip:"Al principio es normal no poder ir muy lejos hacia adelante. Mejora poco a poco, semana a semana."},
 escaladora_cardio:{desc:"Cardio fuerte en la escaladora (la máquina con dos escalones que suben y bajan, simulando subir escaleras). Trabaja piernas y sube bastante el ritmo cardiaco.",pos:"Súbete a la escaladora, apoya las manos suavemente en las barandas a los lados (sin colgarte de ellas), mantén la espalda recta.",pasos:["Da pasos cortos y seguidos, alternando los pies como si subieras escaleras.","Mantén el cuerpo derecho, sin inclinarte hacia adelante ni apoyar mucho peso en tus brazos."],tip:"Deja que las piernas hagan todo el trabajo. Los brazos son solo un apoyo para mantener el equilibrio, no para sostenerte."},
+curl_scott:{desc:"Curl de bíceps en el banco con respaldo inclinado (banco Scott o predicador). Aísla mucho mejor el bíceps porque no dejas que el cuerpo ayude a levantar el peso.",pos:"Siéntate en el banco Scott, apoya la parte de atrás de tus brazos (triceps) sobre el cojín inclinado. Agarra la barra con las dos manos, palmas hacia arriba, brazos casi estirados.",pasos:["Sube la barra doblando los codos, sin despegar los brazos del cojín.","Aprieta arriba por 1 segundo, sintiendo el bíceps bien contraído.","Baja despacio hasta casi estirar los brazos del todo, sin soltar de golpe."],tip:"El cojín inclinado evita que hagas trampa con el cuerpo. Si te cuesta mucho, usa menos peso: aquí se siente más el esfuerzo que con mancuernas libres."},
 };
 
 
@@ -281,7 +281,7 @@ yo:{days:[
    exercises:[
      {name:"Remo en polea (multiestación)",img:"remo",s:4,r:"10-12",t:"90s",k:"remo_polea"},
      {name:"Remo inclinado con barra",img:"remo_inclinado",s:3,r:"10",t:"90s",k:"remo_inclinado_barra"},
-     {name:"Curl de bíceps con mancuernas",img:"curl_bicep",s:3,r:"12 c/brazo",t:"60s",k:"curl_bicep"},
+     {name:"Curl en banco Scott",img:"curl_scott",s:3,r:"10-12",t:"75s",k:"curl_scott"},
      {name:"Peso muerto rumano",img:"peso_muerto",s:3,r:"12",t:"90s",k:"peso_muerto_rumano"},
    ]},
   {name:"Viernes",short:"V",title:"Hombros + Resistencia",focus:"Hombros · Cardio final",
@@ -343,7 +343,16 @@ pareja:{days:[
 };
 
 // Estado con persistencia localStorage. Estructura: {warmup:[bool], cooldown:[bool], ex:[bool]}
-let person='yo', day=0, openDet=new Set();
+// ---- ÚLTIMA POSICIÓN VISITADA (recuerda en qué día estabas, por persona) ----
+function loadLastView(){
+  try{const s=localStorage.getItem('gym_lastview_v1');if(s)return JSON.parse(s);}catch(e){}
+  return {person:'yo',dayByPerson:{yo:0,pareja:0}};
+}
+function saveLastView(){try{localStorage.setItem('gym_lastview_v1',JSON.stringify({person,dayByPerson:lastDayByPerson}));}catch(e){}}
+const _lv=loadLastView();
+let person=_lv.person||'yo';
+let lastDayByPerson=_lv.dayByPerson||{yo:0,pareja:0};
+let day=lastDayByPerson[person]||0, openDet=new Set();
 function emptyDoneDay(){return {warmup:[],cooldown:[],ex:[]}}
 function emptyDonePerson(){return Array.from({length:5},emptyDoneDay)}
 function loadDone(){
@@ -468,7 +477,7 @@ function toggleWU(kind,idx){ // kind: 'warmup' | 'cooldown'
   dd[kind][idx]=!dd[kind][idx];
   const el=document.getElementById(kind+'-'+idx);
   if(el)el.classList.toggle('done',dd[kind][idx]);
-  saveDone();updateWeekProg();updateDayRing();renderDayDots();
+  saveDone();updateWeekProg();updateDayRing();renderDayTabs();
 }
 
 function toggleDone(idx){
@@ -487,7 +496,7 @@ function toggleDone(idx){
     if(det)det.classList.remove('open');
     if(expbtn){expbtn.classList.remove('open');expbtn.querySelector('.btxt').textContent='Ver más';}
   }
-  saveDone();updateWeekProg();updateDayRing();renderDayDots();
+  saveDone();updateWeekProg();updateDayRing();renderDayTabs();
 }
 
 function toggleDet(idx){
@@ -498,31 +507,28 @@ function toggleDet(idx){
 }
 
 function setPerson(p){
-  person=p;day=0;openDet.clear();
+  person=p;day=lastDayByPerson[p]||0;openDet.clear();
   document.querySelectorAll('.ptab').forEach((t,i)=>t.classList.toggle('active',i===(p==='yo'?0:1)));
+  saveLastView();
   renderDayTabs();renderContent();updateWeekProg();updateDayRing();
 }
 function setDay(d){
   day=d;openDet.clear();
+  lastDayByPerson[person]=d;
+  saveLastView();
   document.querySelectorAll('.dtab').forEach((t,i)=>t.classList.toggle('active',i===d));
   renderContent();updateDayRing();window.scrollTo({top:0,behavior:'smooth'});
 }
 
-function renderDayDots(){
-  document.querySelectorAll('.dtab').forEach((t,i)=>{
-    const existing=t.querySelector('.dtick');
-    const allDone=doneDayItems(person,i)===totalDayItems(person,i)&&totalDayItems(person,i)>0;
-    if(allDone&&!existing){const s=document.createElement('span');s.className='dtick';t.appendChild(s);}
-    else if(!allDone&&existing){existing.remove();}
-  });
-}
-
 function renderDayTabs(){
   document.getElementById('dayTabs').innerHTML=routines[person].days.map((d,i)=>{
-    const lock=isDayLocked(person,i)?' 🔒':'';
-    return `<button class="dtab${i===day?' active':''}" onclick="setDay(${i})">${d.short}${lock}</button>`;
+    const allDone=doneDayItems(person,i)===totalDayItems(person,i)&&totalDayItems(person,i)>0;
+    const lock=isDayLocked(person,i);
+    let badge='';
+    if(allDone)badge=' ✅';
+    else if(lock)badge=' 🔒';
+    return `<button class="dtab${i===day?' active':''}" onclick="setDay(${i})">${d.short}${badge}</button>`;
   }).join('');
-  renderDayDots();
 }
 
 function renderWUList(kind,items,dd){
@@ -663,6 +669,7 @@ function fallbackCopy(txt,cb){
   document.body.removeChild(ta);
 }
 
+document.querySelectorAll('.ptab').forEach((t,i)=>t.classList.toggle('active',i===(person==='yo'?0:1)));
 renderDayTabs();
 renderContent();
 updateWeekProg();
